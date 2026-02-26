@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El camino al método CADIA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #050505 0%, #0a0a1a 50%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        .presentation {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: perspective(1200px) rotateY(90deg);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: perspective(1200px) rotateY(0deg);
+        }
+
+        .slide.prev {
+            transform: perspective(1200px) rotateY(-90deg);
+        }
+
+        /* Títulos 3D */
+        .title-3d {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-align: center;
+            color: #ffe600;
+            text-shadow:
+                0 1px 0 #ccaa00,
+                0 3px 0 #997700,
+                0 5px 10px rgba(255, 230, 0, 0.5);
+            animation: float 4s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotateX(5deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotateX(-5deg);
+            }
+        }
+
+        /* Cubo del Método */
+        .cube-container {
+            perspective: 1000px;
+            margin: 30px;
+        }
+
+        .cube {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 12s linear infinite;
+        }
+
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+
+        .face {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 230, 0, 0.1);
+            border: 2px solid #ffe600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #ffe600;
+            backdrop-filter: blur(5px);
+        }
+
+        .front {
+            transform: translateZ(60px);
+        }
+
+        .back {
+            transform: rotateY(180deg) translateZ(60px);
+        }
+
+        .right {
+            transform: rotateY(90deg) translateZ(60px);
+        }
+
+        .left {
+            transform: rotateY(-90deg) translateZ(60px);
+        }
+
+        .top {
+            transform: rotateX(90deg) translateZ(60px);
+        }
+
+        .bottom {
+            transform: rotateX(-90deg) translateZ(60px);
+        }
+
+        /* Tarjetas Agénticas */
+        @keyframes autoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) translateZ(0);
+                box-shadow: 0 0 10px rgba(255, 230, 0, 0);
+            }
+
+            50% {
+                transform: translateY(-3px) translateZ(10px);
+                box-shadow: 0 5px 15px rgba(255, 230, 0, 0.2);
+            }
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 15px;
+            perspective: 1200px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 95%;
+            /* Prevent overflowing the 3D slide face */
+        }
+
+        .card {
+            flex: 1 1 auto;
+            /* Allow cards to shrink/grow and fit within the parent */
+            min-width: 180px;
+            /* Minimum size before wrapping */
+            max-width: 250px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 15px;
+            /* Reduced padding to fit more text securely */
+            border: 1px solid rgba(255, 230, 0, 0.2);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            animation: autoFloat var(--anim-dur, 4s) var(--anim-del, 0s) ease-in-out infinite;
+        }
+
+        .card:hover {
+            transform: translateZ(30px) rotateY(5deg) scale(1.02);
+            background: rgba(255, 230, 0, 0.1);
+            border-color: #ffe600;
+            animation-play-state: paused;
+            /* Pause auto float when user focuses */
+        }
+
+        .card h3 {
+            color: #ffaa00;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .card p {
+            font-size: 0.8rem;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        /* Pirámide de Métricas */
+        .pyramid-container {
+            perspective: 1000px;
+            margin: 40px;
+        }
+
+        .pyramid {
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 120px solid #ffaa00;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotatePyramid 8s linear infinite;
+        }
+
+        .pyramid::after {
+            content: 'KPI';
+            position: absolute;
+            top: 60px;
+            left: -20px;
+            color: white;
+            font-weight: bold;
+            transform: translateZ(20px);
+        }
+
+        @keyframes rotatePyramid {
+            0% {
+                transform: rotateY(0deg);
+            }
+
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
+
+        /* Controles e Indicadores */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            /* hidden for a cleaner look */
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffe600, #7b2cbf);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 230, 0, 0.5);
+        }
+
+        .indicators {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            /* hidden for a cleaner look */
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .indicator.active {
+            background: #ffe600;
+            transform: scale(1.3);
+        }
+
+        .footer-tag {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        /* GIANT CUBE PRESENTATION SYSTEM */
+        .scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            perspective: 2500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #050505 100%);
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        @keyframes rotateCore {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg);
+            }
+        }
+
+        .presentation {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="presentation">
+
+        <div class="slide active">
+            <h1 class="title-3d">EL CAMINO AL MÉTODO CADIA</h1>
+            <div class="cube-container">
+                <div class="cube">
+                    <div class="face front">INTEZIA</div>
+                    <div class="face back">IA 2026</div>
+                    <div class="face right">AGENTS</div>
+                    <div class="face left">CADIA</div>
+                    <div class="face top">CADIA</div>
+                    <div class="face bottom">FUTURE</div>
+                </div>
+            </div>
+            <p style="color: #ffe600; letter-spacing: 5px;">REVOLUCIÓN AGÉNTICA</p>
+        </div>
+
+        <!-- Slide: Timeline 2024 -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 2rem; margin-bottom: 10px; color: #ffe600;">2024 – El Nacimiento de
+                la Infraestructura</h2>
+            <p style="text-align: center; color: #ccc; font-size: 1.1rem; margin-bottom: 30px;">La base técnica que
+                permitió conectar la IA con el mundo real.</p>
+
+            <div class="cards-container"
+                style="gap: 20px; width: 90%; display: grid; grid-template-columns: repeat(2, 1fr);">
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Anthropic (Nov)</h3>
+                    <p style="font-size: 0.9rem;">Lanzamiento de MCP (Model Context Protocol). La IA deja de ser una
+                        isla y accede a nuestras bases de datos locales.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Anthropic (Dic)</h3>
+                    <p style="font-size: 0.9rem;">Modelos de Escritura optimizados para estructura técnica.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Google (Dic)</h3>
+                    <p style="font-size: 0.9rem;">Gemini 2.0 Flash. Inicio de la era de agentes con baja latencia.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">OpenAI (Dic)</h3>
+                    <p style="font-size: 0.9rem;">o1 (Full Release). Primeros modelos con razonamiento profundo (Chain
+                        of Thought).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Timeline 2025 -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 2rem; margin-bottom: 10px; color: #ffaa00;">2025 – El Año de la
+                Autonomía y Creación</h2>
+            <p style="text-align: center; color: #ccc; font-size: 1.1rem; margin-bottom: 30px;">Cuando la IA pasó de
+                "pensar" a "ejecutar" y crear contenido de alto nivel.</p>
+
+            <div class="cards-container"
+                style="gap: 15px; width: 95%; display: grid; grid-template-columns: repeat(3, 1fr);">
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">Anthropic (Feb)</h3>
+                    <p style="font-size: 0.8rem;">Claude Code. Autonomía real en el ciclo de desarrollo de software.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">OpenAI (Feb)</h3>
+                    <p style="font-size: 0.8rem;">GPT-4.5. Refinamiento de la interacción multimodal.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">Google (Abr)</h3>
+                    <p style="font-size: 0.8rem;">Nano Banana. Revolución en diseño y edición de imágenes con fidelidad
+                        extrema.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">Google (Jun)</h3>
+                    <p style="font-size: 0.8rem;">Gemini 2.5 Pro. Ventana de contexto masiva para análisis de grandes
+                        volúmenes de datos.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">OpenAI (Jul)</h3>
+                    <p style="font-size: 0.8rem;">Agent Development Kit (ADK). Estándar industrial para agentes con
+                        memoria persistente.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">OpenAI (Ago)</h3>
+                    <p style="font-size: 0.8rem;">GPT-5. El nuevo estándar global de inteligencia general.</p>
+                </div>
+                <div class="card"
+                    style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00; background: rgba(255, 170, 0, 0.1);">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">Antigravity (Oct)</h3>
+                    <p style="font-size: 0.8rem;">Lanzamiento de arquitectura Antigravity para modelos masivos con cero
+                        latencia local.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">OpenAI (Nov)</h3>
+                    <p style="font-size: 0.8rem;">ChatGPT 5.1. "Intuición de Sistemas": predicción de fallos antes de
+                        que ocurran.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 12px; border-color: #ffaa00;">
+                    <h3 style="margin-bottom: 5px; font-size: 1rem;">Anthropic (Dic)</h3>
+                    <p style="font-size: 0.8rem;">Skills. La IA aprende flujos de trabajo específicos de forma modular.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Timeline 2026 -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 2rem; margin-bottom: 10px; color: #ffe600;">2026 – La Era CADIA:
+                Colaboración y Legado</h2>
+            <p style="text-align: center; color: #ccc; font-size: 1.1rem; margin-bottom: 30px;">Nuestra realidad actual:
+                Integración humana-agéntica y resolución de deuda técnica.</p>
+
+            <div class="cards-container"
+                style="gap: 20px; width: 90%; display: grid; grid-template-columns: repeat(2, 1fr);">
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Anthropic (Ene)</h3>
+                    <p style="font-size: 0.9rem;">Claude Cowork. Trabajo en tiempo real entre humanos y agentes sobre el
+                        mismo código.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Anthropic (Ene)</h3>
+                    <p style="font-size: 0.9rem;">Claude Research Index. Se demuestra que a mayor nivel de estudios del
+                        usuario, mayor precisión del output de la IA (Factor Humano Crítico).</p>
+                </div>
+                <div class="card"
+                    style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600; background: rgba(255, 230, 0, 0.1);">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Anthropic (Feb)</h3>
+                    <p style="font-size: 0.9rem;">Claude Sonnet 4.6. Comprensión nativa de COBOL, clave para modernizar
+                        la banca y sistemas antiguos.</p>
+                </div>
+                <div class="card" style="width: 100%; min-width: 0; padding: 15px; border-color: #ffe600;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Google (Feb)</h3>
+                    <p style="font-size: 0.9rem;">Gemini 3.1 Pro & Deep Think. Optimización para razonamiento científico
+                        y problemas complejos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Factor Humano -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">EL FACTOR HUMANO: Anthropic Economic Index report</h2>
+            <div style="display: flex; align-items: center; gap: 40px; max-width: 1000px;">
+                <div style="text-align: right; flex: 1;">
+                    <h3 style="color: #ffe600; font-size: 1.5rem;">+35% PRECISIÓN</h3>
+                    <p style="font-size: 0.9rem; color: #ccc;">Correlación directa: a mayor nivel académico/técnico,
+                        mayor calidad del output.</p>
+                </div>
+                <div class="pyramid-container">
+                    <div class="pyramid"></div>
+                </div>
+                <div style="text-align: left; flex: 1;">
+                    <h3 style="color: #ffaa00; font-size: 1.5rem;">IA COMO AMPLIFICADOR</h3>
+                    <p style="font-size: 0.9rem; color: #ccc;">El profesional senior sabe estructurar contexto, definir
+                        variables y validar con criterio.</p>
+                </div>
+            </div>
+            <div class="card"
+                style="width: 80%; margin-top: 30px; border-color: #ffe600; background: rgba(255, 230, 0, 0.05);">
+                <p style="font-style: italic; text-align: center;">"El Método CADIA es una herramienta de élite para un
+                    equipo de élite. Potenciamos el talento senior para ser 10x más productivo."</p>
+            </div>
+        </div>
+
+        <!-- Slide: Innovación en el Servicio (Petroval) -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">📊 INNOVACIÓN EN TODO EL SERVICIO</h2>
+            <div class="card" style="width: 90%; margin-bottom: 20px; border-color: #ffe600;">
+                <h3>🛠️ Dashboards Impulsados con IA</h3>
+                <p>Implementación de ecosistemas de alto rendimiento: <strong>Antigravity, Lovable, Vercel y
+                        Replit</strong>.</p>
+            </div>
+            <div class="card" style="width: 85%; border-color: #ffaa00; border-width: 2px;">
+                <h3 style="text-align: center;">🚀 CASO DE ÉXITO: PETROVAL</h3>
+                <div style="display: flex; justify-content: space-around; margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <span style="display: block; font-size: 0.7rem; color: #aaa;">Métrica: VOLUMEN</span>
+                        <strong style="color: #ffe600;">+700 CLIENTES</strong>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="display: block; font-size: 0.7rem; color: #aaa;">Métrica: TIEMPO</span>
+                        <strong style="color: #ffe600;">30 DÍAS (de 60)</strong>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="display: block; font-size: 0.7rem; color: #aaa;">Métrica: VALOR</span>
+                        <strong style="color: #ffe600;">$4,000 USD</strong>
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; text-align: center; color: #ccc;">Procesos optimizados que superan en
+                    rentabilidad y menor carga a desarrollos tradicionales como Covencaucho.</p>
+            </div>
+        </div>
+
+        <!-- Slide: Robustez Agéntica (Sambil) -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🤖 ROBUSTEZ DE LAS FUNCIONES</h2>
+            <div class="card" style="width: 90%; margin-bottom: 20px;">
+                <h3>⚡ Agentes Proactivos</h3>
+                <p>Uso avanzado de herramientas: <strong>MCP, OpenClaw, Claude Code/Cowork, Skills</strong>. No buscamos
+                    agentes solo funcionales, sino reactivos y predictivos.</p>
+            </div>
+            <div class="card" style="width: 85%; border-color: #ffe600; background: rgba(255, 230, 0, 0.05);">
+                <h3>� CASO DE ÉXITO: GRUPO SAMBIL</h3>
+                <p style="margin-bottom: 15px;"><strong>Métrica de Capacitación:</strong> Formación técnica de alto
+                    nivel para el Gerente Cohen. Implementación exitosa de conceptos de <strong>OpenClaw</strong>.</p>
+                <p style="font-size: 0.8rem; color: #aaa;">"La utilidad técnica de estas herramientas está transformando
+                    el liderazgo de los grandes grupos comerciales."</p>
+            </div>
+        </div>
+
+        <!-- Slide: Metodología CADIA (Partners & Métricas) -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🏷️ MÉTRICA CADIA: ÉXITO DESPLEGADO</h2>
+            <div style="display: flex; gap: 15px; width: 100%; max-width: 1100px;">
+                <!-- FVF -->
+                <div class="card" style="flex: 1.2; border-color: #ffe600;">
+                    <h3 style="font-size: 1rem;">⚽ Federación (FVF)</h3>
+                    <div style="margin: 15px 0;">
+                        <p style="font-size: 0.8rem; margin-bottom: 8px;">
+                            <strong style="color: #ffe600;">Requisiciones:</strong> 3 días → <span
+                                style="background: #ffe600; color: black; padding: 0 5px; font-weight: bold; border-radius: 3px;">10
+                                MINUTOS</span>
+                        </p>
+                        <p style="font-size: 0.8rem;">
+                            <strong style="color: #ffe600;">Calendario:</strong> Meses → <span
+                                style="background: #ffe600; color: black; padding: 0 5px; font-weight: bold; border-radius: 3px;">1
+                                HORA</span>
+                        </p>
+                    </div>
+                    <p style="font-size: 0.7rem; color: #aaa;">Integración de Google Calendar a API de datos para
+                        automatización total de competiciones.</p>
+                </div>
+                <!-- Covencaucho -->
+                <div class="card" style="flex: 1.2; border-color: #ffaa00;">
+                    <h3 style="font-size: 1rem;">🚗 Covencaucho</h3>
+                    <div style="margin: 15px 0;">
+                        <p style="font-size: 0.8rem; margin-bottom: 8px;">
+                            <strong style="color: #ffaa00;">Capacidad:</strong> 50+ personas / hora
+                        </p>
+                        <p style="font-size: 0.8rem;">
+                            <strong style="color: #ffaa00;">Atención:</strong> Cero conversaciones abiertas
+                        </p>
+                    </div>
+                    <p style="font-size: 0.7rem; color: #aaa;">Antes: 20 personas sin atención por hora. Ahora: Flujo
+                        continuo y optimizado.</p>
+                </div>
+                <!-- Partners ecosystem footer-like card -->
+                <div class="card" style="flex: 0.8; border-color: #ccc;">
+                    <h3 style="font-size: 0.9rem;">📈 Ecosistema</h3>
+                    <p style="font-size: 0.65rem; color: #ccc;">Metodología validada también en:</p>
+                    <ul style="font-size: 0.65rem; color: #aaa; margin-top: 5px; padding-left: 15px;">
+                        <li>ESTEI</li>
+                        <li>Ridery</li>
+                        <li>Sambil Group</li>
+                        <li>Mundial de Seguros</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 25px; font-size: 0.8rem; color: #aaa; font-style: italic;">"La metodología CADIA
+                transforma procesos manuales de meses en ejecuciones de minutos."</p>
+        </div>
+
+        <!-- Slide: Contexto de Atrasos -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🚨 EL DESAFÍO: CONTEXTO DE ATRASOS</h2>
+            <div class="card" style="width: 80%; border-color: #ffaa00; margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #ffaa00;">¿Por qué los proyectos no estaban listos en 30 días?
+                </h3>
+                <ul style="color: #ccc; font-size: 0.9rem; line-height: 1.6; padding-left: 20px; margin-top: 15px;">
+                    <li><strong>Levantamiento deficiente:</strong> Discrepancias entre la información inicial y la
+                        problemática real planteada.</li>
+                    <li><strong>Crecimiento desmedido (Scope Creep):</strong> Data y requerimientos ocultos que aparecen
+                        en pleno desarrollo.</li>
+                    <li><strong>Factores del Cliente:</strong> Demoras en entregar data o realizar pruebas después de
+                        confirmar el inicio.</li>
+                </ul>
+            </div>
+            <p style="font-style: italic; color: #aaa; font-size: 0.9rem;">Resultado: El proyecto se vuelve complejo,
+                abultado y su ejecución inevitablemente se retrasa.</p>
+        </div>
+
+        <!-- Slide: Soluciones Implementadas -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">✅ SOLUCIONES IMPLEMENTADAS</h2>
+            <div class="cards-container" style="gap: 15px;">
+                <div class="card" style="width: 250px; border-color: #ffe600;">
+                    <h3>📋 Alcance Exacto</h3>
+                    <p>Levantamiento extenso y preciso. Definición estricta de <strong>lo que queda fuera</strong> del
+                        alcance.</p>
+                </div>
+                <div class="card" style="width: 250px; border-color: #ffe600;">
+                    <h3>🎯 Soluciones Realistas</h3>
+                    <p>Entregamos lo que el proyecto realmente necesita, eliminando la "carta a Santa Claus".</p>
+                </div>
+                <div class="card" style="width: 250px; border-color: #ffe600;">
+                    <h3>⏱️ Feedback y Control</h3>
+                    <p>Reuniones semanales para no perder tiempo, y <strong>Formulario de satisfacción</strong> evaluado
+                        en cada entregable.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Métricas de Entregas -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">📈 MÉTRICA DE EFICIENCIA: ENTREGAS A TIEMPO</h2>
+            <div
+                style="display: flex; gap: 30px; width: 100%; max-width: 900px; justify-content: center; margin-top: 20px;">
+                <div class="card" style="flex: 1; border-color: #ccc; background: rgba(255, 255, 255, 0.05);">
+                    <h3 style="text-align: center; color: white;">Ene 2025 - Dic 2025</h3>
+                    <div
+                        style="font-size: 3rem; font-weight: bold; text-align: center; color: #ffaa00; margin: 10px 0;">
+                        70%</div>
+                    <p style="font-size: 0.8rem; text-align: center; color: #aaa;">Limitados severamente por falta de
+                        data, desaparición temporal del cliente y falta de pruebas.</p>
+                </div>
+                <div class="card"
+                    style="flex: 1; border-color: #ffe600; background: rgba(255, 230, 0, 0.05); transform: translateZ(20px);">
+                    <h3 style="text-align: center; color: #ffe600;">Era CADIA (Oct '25 - Feb '26)</h3>
+                    <div
+                        style="font-size: 3.5rem; font-weight: bold; text-align: center; color: #ffe600; margin: 10px 0;">
+                        90%</div>
+                    <p style="font-size: 0.8rem; text-align: center; color: #ccc;">Impacto masivo en rendimiento y una
+                        trazabilidad de proyecto mucho más amplia y rigurosa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Proyectos Impactados & Nuevas Políticas -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🏢 PROYECTOS EXITOSOS Y NUEVAS MEDIDAS</h2>
+
+            <div class="card" style="width: 85%; border-color: #ffe600; margin-bottom: 20px;">
+                <h3 style="color: #ffe600; text-align: center;">Implementación CADIA Exitosa</h3>
+                <div
+                    style="display: flex; justify-content: space-around; margin-top: 15px; font-weight: bold; color: white; flex-wrap: wrap; gap: 10px;">
+                    <span
+                        style="background: rgba(255, 230, 0,0.2); padding: 5px 15px; border-radius: 20px;">Sarego</span>
+                    <span
+                        style="background: rgba(255, 230, 0,0.2); padding: 5px 15px; border-radius: 20px;">Distribuidora
+                        ETP</span>
+                    <span
+                        style="background: rgba(255, 230, 0,0.2); padding: 5px 15px; border-radius: 20px;">Inpulse</span>
+                    <span style="background: rgba(255, 230, 0,0.2); padding: 5px 15px; border-radius: 20px;">Cristalería
+                        Gaby</span>
+                </div>
+            </div>
+
+            <div class="card" style="width: 85%; border-color: #ffaa00; background: rgba(255, 170, 0, 0.05);">
+                <h3 style="color: #ffaa00;">⚠️ Términos de Incumplimiento</h3>
+                <p style="font-size: 0.9rem; text-align: center;">Para combatir las limitantes persistentes, se crean
+                    políticas estrictas contra atrasos del cliente.</p>
+                <div style="text-align: center; margin-top: 10px; font-weight: bold; font-style: italic; color: #ccc;">
+                    "Que nuestro trabajo valga y al cliente le duela lo que paga si incumple sus responsabilidades."
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide: Plan de Mejora Marzo 2026 -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🚀 PLAN DE MEJORA: MARZO 2026</h2>
+            <div class="cards-container" style="gap: 20px;">
+
+                <div class="card"
+                    style="width: 220px; border-color: #ffaa00; border-width: 2px; background: rgba(255, 170, 0, 0.05);">
+                    <h3 style="color: #ffaa00;">⚖️ Tolerancia Cero</h3>
+                    <p>Ejecución pragmática de <strong>términos de incumplimiento</strong>. El proyecto se pausa y/o
+                        penaliza financieramente si el cliente retrasa datos o pruebas pactadas.</p>
+                </div>
+
+                <div class="card" style="width: 220px; border-color: #ffe600;">
+                    <h3 style="color: #ffe600;">🤖 Follow-up Agéntico</h3>
+                    <p>Implementación de flujos para recordar entregables a los clientes y procesar los
+                        <strong>formularios de satisfacción</strong>, reduciendo el desgaste administrativo.
+                    </p>
+                </div>
+
+                <div class="card" style="width: 220px; border-color: #ffe600;">
+                    <h3 style="color: #ffe600;">🛡️ Blindaje de Alcance</h3>
+                    <p>Firma de actas de requerimientos restrictivas para erradicar el <em>Scope Creep</em>. La nueva
+                        meta de eficiencia sube del 90% al <strong>98% de entregas a tiempo</strong>.</p>
+                </div>
+
+                <div class="card" style="width: 220px; border-color: #ffe600;">
+                    <h3 style="color: #ffe600;">🧠 Maximizando el Talento</h3>
+                    <p>Escalar el uso de herramientas colaborativas IA en todo el equipo para aprovechar al máximo el
+                        <strong>factor humano senior</strong> y reducir la dependencia de revisiones iterativas.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Slide: Conclusión Vanguardia -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 1.8rem;">🏁 CADIA: EL NUEVO ESTÁNDAR DE VANGUARDIA</h2>
+
+            <div class="card" style="width: 85%; border-color: #ffe600; margin-bottom: 20px;">
+                <h3 style="color: #ffe600; text-align: center; font-size: 1.2rem;">¿Por qué el Método llegó para
+                    quedarse?</h3>
+                <p style="text-align: center; font-size: 0.95rem; line-height: 1.5; margin-top: 10px;">
+                    Integra la potencia de la IA generativa con el <strong>factor humano maduro</strong>, transformando
+                    el desarrollo de software de un proceso artesanal e impredecible a una cadena de producción
+                    <strong>garantizada, medible y escalable</strong>.
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 15px; width: 85%; justify-content: space-between;">
+                <div class="card" style="flex: 1; border-color: #ffaa00; padding: 15px;">
+                    <h4 style="color: #ffaa00; text-align: center; margin-bottom: 5px;">Eficiencia Temporal</h4>
+                    <p style="font-size: 0.8rem; text-align: center; color: #ccc;">Procesos de meses reducidos a
+                        <strong>minutos</strong>. Garantía estricta de <strong>30 días</strong> por proyecto.
+                    </p>
+                </div>
+                <div class="card" style="flex: 1; border-color: #ffe600; padding: 15px;">
+                    <h4 style="color: #ffe600; text-align: center; margin-bottom: 5px;">Blindaje Operativo</h4>
+                    <p style="font-size: 0.8rem; text-align: center; color: #ccc;">Proyección de <strong>98% de entregas
+                            a tiempo</strong> erradicando el <em>Scope Creep</em> y demoras.</p>
+                </div>
+                <div class="card" style="flex: 1; border-color: #ffaa00; padding: 15px;">
+                    <h4 style="color: #ffaa00; text-align: center; margin-bottom: 5px;">Calidad Absoluta</h4>
+                    <p style="font-size: 0.8rem; text-align: center; color: #ccc;">Meta de <strong>8/10
+                            clientes</strong> con satisfacción sobresaliente, asegurando adopción y recompra.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide Impacto Intezia & Rol del Consultor -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 2rem;">EL IMPACTO EN INTEZIA</h2>
+
+            <div class="cards-container" style="margin-bottom: 25px;">
+                <div class="card" style="width: 250px;">
+                    <h3 style="text-align: center;">Transformación</h3>
+                    <p style="text-align: center;">De reactivos a proactivos gracias a la "Intuición de Sistemas" y la
+                        reducción de latencia.</p>
+                </div>
+                <div class="card" style="width: 250px; border-color: #ffe600;">
+                    <h3 style="text-align: center;">Infraestructura</h3>
+                    <p style="text-align: center;">Pila tecnológica ágil y centralizada: Antigravity, MCP, y despliegue
+                        instantáneo.</p>
+                </div>
+            </div>
+
+            <h3 style="color: #ffaa00; margin-top: 10px; font-size: 1.4rem; letter-spacing: 2px;">¿DÓNDE ENCAJA EL
+                CONSULTOR?</h3>
+            <div style="display: flex; gap: 20px; width: 95%; max-width: 1200px; margin-top: 15px;">
+                <div class="card"
+                    style="flex: 1; border-color: #ffaa00; background: rgba(255, 170, 0, 0.05); padding: 15px;">
+                    <h4 style="color: #ffaa00; text-align: center; margin-bottom: 10px;">🧠 El Orquestador Estratégico
+                    </h4>
+                    <p style="font-size: 0.85rem; text-align: center; color: #ccc;">El Consultor ya no es un "gestor de
+                        tareas" o "escribano de código". Es el <strong>Arquitecto Senior</strong> que define el
+                        contexto, domina el <em>Prompt Engineering</em> de alto nivel y dirige a los agentes hacia la
+                        solución exacta.</p>
+                </div>
+                <div class="card"
+                    style="flex: 1; border-color: #ffe600; background: rgba(255, 230, 0, 0.05); padding: 15px;">
+                    <h4 style="color: #ffe600; text-align: center; margin-bottom: 10px;">🎯 Garante de Calidad Comercial
+                    </h4>
+                    <p style="font-size: 0.85rem; text-align: center; color: #ccc;">Es la barrera humana que vincula la
+                        potencia agéntica con la <strong>Meta de la Empresa (Calidad y Recompra)</strong>. El consultor
+                        valida, corrige el rumbo y ejerce la "Tolerancia Cero" garantizando rentabilidad.</p>
+                </div>
+                <div class="card"
+                    style="flex: 1; border-color: #ffaa00; background: rgba(255, 170, 0, 0.05); padding: 15px;">
+                    <h4 style="color: #ffaa00; text-align: center; margin-bottom: 10px;">🤝 Traductor de Negocios
+                    </h4>
+                    <p style="font-size: 0.85rem; text-align: center; color: #ccc;">La IA no sabe qué quiere el cliente
+                        a menos que alguien se lo explique. El consultor es el puente crítico que convierte las
+                        <strong>necesidades abstractas del negocio</strong> en especificaciones técnicas perfectas.
+                    </p>
+                </div>
+            </div>
+
+            <p style="margin-top: 25px; color: #ffe600; font-weight: bold;">Reporte CPO - 2026</p>
+        </div>
+
+        <!-- Slide: Créditos -->
+        <div class="slide">
+            <h2 class="title-3d" style="font-size: 2.2rem; margin-bottom: 20px;">LÁMINAS REALIZADAS CON</h2>
+            <div style="display: flex; gap: 40px; justify-content: center; align-items: center; margin-top: 40px;">
+                <div class="card"
+                    style="width: 300px; padding: 40px 20px; border-color: #fff; background: rgba(255, 255, 255, 0.05); text-align: center;">
+                    <h3 style="font-size: 1.8rem; color: #fff; letter-spacing: 2px;">BlackBox.AI</h3>
+                    <p style="font-size: 1rem; color: #ccc; margin-top: 15px;">Generación de Base y Animaciones</p>
+                </div>
+                <div style="font-size: 3rem; color: #ffe600;">+</div>
+                <div class="card"
+                    style="width: 300px; padding: 40px 20px; border-color: #ffe600; background: rgba(255, 230, 0, 0.05); text-align: center;">
+                    <h3 style="font-size: 1.8rem; color: #ffe600; letter-spacing: 2px;">Antigravity</h3>
+                    <p style="font-size: 1rem; color: #ccc; margin-top: 15px;">Refinamiento y Estructura Final</p>
+                </div>
+            </div>
+            <p style="margin-top: 50px; font-size: 1.1rem; color: #aaa; font-style: italic;">"La IA y el Humano
+                colaborando al más alto nivel."</p>
+        </div>
+
+    </div>
+
+    <div class="indicators">
+        <div class="indicator active" onclick="goToSlide(0)"></div>
+        <div class="indicator" onclick="goToSlide(1)"></div>
+        <div class="indicator" onclick="goToSlide(2)"></div>
+        <div class="indicator" onclick="goToSlide(3)"></div>
+        <div class="indicator" onclick="goToSlide(4)"></div>
+        <div class="indicator" onclick="goToSlide(5)"></div>
+        <div class="indicator" onclick="goToSlide(6)"></div>
+        <div class="indicator" onclick="goToSlide(7)"></div>
+        <div class="indicator" onclick="goToSlide(8)"></div>
+        <div class="indicator" onclick="goToSlide(9)"></div>
+        <div class="indicator" onclick="goToSlide(10)"></div>
+        <div class="indicator" onclick="goToSlide(11)"></div>
+        <div class="indicator" onclick="goToSlide(12)"></div>
+        <div class="indicator" onclick="goToSlide(13)"></div>
+        <div class="indicator" onclick="goToSlide(14)"></div>
+        <div class="indicator" onclick="goToSlide(15)"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="prevSlide()">← Anterior</button>
+        <button class="btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <div class="footer-tag">MÉTODO CADIA 2026</div>
+
+    <script>
+        let currentSlide = 0;
+        const rawSlides = document.querySelectorAll('.slide');
+        const totalSlides = rawSlides.length;
+        let isAnimating = false;
+
+        // 1. Build Scene
+        const scene = document.createElement('div');
+        scene.className = 'scene';
+
+        const camera = document.createElement('div');
+        camera.id = 'camera';
+        camera.style.cssText = 'transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform: translateZ(-40vh); width: 0; height: 0; display: flex; justify-content: center; align-items: center; will-change: transform;';
+
+        const world = document.createElement('div');
+        world.id = 'world';
+        world.style.cssText = 'transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1); width: 0; height: 0; position: relative; display: flex; justify-content: center; align-items: center; will-change: transform;';
+
+        // 2. Build Glowing Core & Abstract Rings
+        const core = document.createElement('div');
+        core.style.cssText = 'position: absolute; width: 0; height: 0; transform-style: preserve-3d; animation: rotateCore 30s linear infinite;';
+        const cfStyles = ['rotateY(0deg)', 'rotateY(90deg)', 'rotateY(180deg)', 'rotateY(-90deg)', 'rotateX(90deg)', 'rotateX(-90deg)'];
+        cfStyles.forEach(tf => {
+            const f = document.createElement('div');
+            f.style.cssText = `position: absolute; width: 50vh; height: 50vh; top: -25vh; left: -25vh; background: rgba(255, 230, 0, 0.03); border: 1px solid rgba(255, 230, 0, 0.2); box-shadow: 0 0 100px rgba(255, 230, 0, 0.1) inset; transform: ${tf} translateZ(25vh);`;
+            core.appendChild(f);
+        });
+
+        // Dynamic keyframes for new abstract effects
+        const styleEl = document.createElement('style');
+        styleEl.innerHTML = `
+            @keyframes spinRing { 100% { transform: rotateZ(360deg); } }
+            @keyframes floatData { 
+                0% { opacity: 0; transform: translateY(100vh) translateZ(-800px); } 
+                20% { opacity: 0.8; } 80% { opacity: 0.8; } 
+                100% { opacity: 0; transform: translateY(-100vh) translateZ(-800px); } 
+            }
+        `;
+        document.head.appendChild(styleEl);
+
+        // Abstract Orbital Rings
+        for (let r = 0; r < 5; r++) {
+            const ringWrap = document.createElement('div');
+            const rotX = Math.random() * 360;
+            const rotY = Math.random() * 360;
+            ringWrap.style.cssText = `position: absolute; transform-style: preserve-3d; transform: rotateX(${rotX}deg) rotateY(${rotY}deg);`;
+
+            const ring = document.createElement('div');
+            const size = 110 + (r * 35); // Huge rings spanning from 110vh to 250vh
+            const isDashed = r % 2 === 0;
+            const dur = 15 + (Math.random() * 20);
+            const dir = Math.random() > 0.5 ? 'normal' : 'reverse';
+
+            ring.style.cssText = `
+                position: absolute; width: ${size}vh; height: ${size}vh; top: -${size / 2}vh; left: -${size / 2}vh; 
+                border-radius: 50%; border: ${isDashed ? '2px dashed' : '1px solid'} rgba(255, 230, 0, 0.15); 
+                border-left: 3px solid rgba(255, 170, 0, 0.7); border-right: 2px solid rgba(255, 230, 0, 0.4);
+                animation: spinRing ${dur}s linear ${dir} infinite; box-sizing: border-box; 
+                box-shadow: 0 0 30px rgba(255, 230, 0, 0.1) inset, 0 0 20px rgba(255, 170, 0, 0.2);
+            `;
+
+            ringWrap.appendChild(ring);
+            core.appendChild(ringWrap);
+        }
+
+        world.appendChild(core);
+
+        // Holographic Data Particles
+        for (let p = 0; p < 40; p++) {
+            const particle = document.createElement('div');
+            const x = Math.random() * 100;
+            const s = Math.random() * 3 + 1;
+            const delay = Math.random() * -15; // negative delay to start immediately scattered
+            const dur = Math.random() * 10 + 15;
+            particle.style.cssText = `
+                position: absolute; left: ${x}vw; top: 0; width: ${s}px; height: ${s}px; 
+                background: #ffe600; border-radius: 50%; box-shadow: 0 0 15px #ffe600, 0 0 5px #ffaa00; 
+                opacity: 0; animation: floatData ${dur}s ${delay}s infinite linear; pointer-events: none;
+            `;
+            scene.appendChild(particle);
+        }
+
+        // 3. Mathematical Path Setup: The Majestic Cyber-Helix
+        const worldStrs = [];
+        const slideStrs = [];
+
+        const FACE_WIDTH = 150; // 150vh wide (WIDESCREEN 16:9 approx)
+        const FACE_HEIGHT = 85; // 85vh tall
+        const HELIX_RADIUS = 180; // WIDER CIRCLE for larger slides
+        const ANGLE_STEP = 50; // 50 degrees spacing
+        const Y_STEP = 32; // 32vh per slide vertical climb
+
+        rawSlides.forEach((slide, i) => {
+            const angle = i * ANGLE_STEP;
+            const yPos = (i * Y_STEP) - ((totalSlides * Y_STEP) / 2); // Center helix vertically
+
+            // The slide climbs up/down and rotates around the core
+            slideStrs[i] = `rotateY(${angle}deg) translateZ(${HELIX_RADIUS}vh) translateY(${yPos}vh)`;
+
+            // The world counter-acts the rotation and translates the camera to the slide center
+            worldStrs[i] = `translateY(${-yPos}vh) translateZ(${-HELIX_RADIUS}vh) rotateY(${-angle}deg)`;
+
+            const face = document.createElement('div');
+            face.innerHTML = slide.innerHTML;
+            face.style.cssText = `
+                position: absolute; width: ${FACE_WIDTH}vh; height: ${FACE_HEIGHT}vh; top: -${FACE_HEIGHT / 2}vh; left: -${FACE_WIDTH / 2}vh;
+                background: linear-gradient(135deg, rgba(5,5,5,0.98) 0%, rgba(10,10,26,0.98) 50%, rgba(15,15,35,0.99) 100%);
+                border: 2px solid rgba(255, 230, 0, 0.4);
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.9); /* Omit deep inset shadows on moving blocks to save massive GPU cycles */
+                border-radius: 20px; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+                backface-visibility: hidden; transform: ${slideStrs[i]}; will-change: transform;
+            `;
+
+            // Inject random animation delays for the autonomous floating cards inside this slide
+            const slideCards = face.querySelectorAll('.card');
+            slideCards.forEach((c) => {
+                c.style.setProperty('--anim-dur', (3 + Math.random() * 2) + 's');
+                c.style.setProperty('--anim-del', (Math.random() * -5) + 's');
+            });
+
+            world.appendChild(face);
+        });
+
+        camera.appendChild(world);
+        scene.appendChild(camera);
+        document.body.appendChild(scene);
+
+        // Navigation Logic
+        function animateTo(index) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            // Zoom out
+            camera.style.transform = `translateZ(-110vh)`;
+
+            setTimeout(() => {
+                // Rotación compleja 3D
+                world.style.transform = worldStrs[index];
+
+                setTimeout(() => {
+                    // Zoom in
+                    camera.style.transform = `translateZ(-40vh)`;
+                    setTimeout(() => { isAnimating = false; }, 800);
+                }, 850);
+            }, 450);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1 && !isAnimating) {
+                currentSlide++;
+                animateTo(currentSlide);
+            }
+        }
+        function prevSlide() {
+            if (currentSlide > 0 && !isAnimating) {
+                currentSlide--;
+                animateTo(currentSlide);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Setup Inicial
+        world.style.transform = worldStrs[0];
+        camera.style.transform = 'translateZ(-40vh)';
+    </script>
+</body>
+
+</html>
